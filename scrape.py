@@ -53,10 +53,7 @@ html_content = f"""
 """
 
 try:
-    options = {
-        'encoding': 'UTF-8',
-    }
-    pdfkit.from_string(html_content, 'scraped_text.pdf', options=options)
+    pdfkit.from_string(html_content, 'scraped_text.pdf', options={ 'encoding': 'UTF-8' })
     print("PDF saved successfully!")
 except Exception as e:
     print(f"Error saving PDF: {e}")
