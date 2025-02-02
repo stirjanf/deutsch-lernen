@@ -99,12 +99,6 @@ for sheet in sheets:
             "word": wrds[i],
             "translation": trs[i]
             })
-"""
-obj_verbs = reducieren(obj_verbs)
-obj_nouns = reducieren(obj_nouns)
-obj_adj = reducieren(obj_adj)
-obj_adv = reducieren(obj_adv)
-"""
 
 objs = [obj_verbs, obj_nouns, obj_adj, obj_adv]
 obj = [item for sublist in [obj_verbs, obj_nouns, obj_adj, obj_adv] for item in sublist]
