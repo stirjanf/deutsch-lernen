@@ -30,7 +30,6 @@ def play(obj,num):
 
 sheets = ["Glagoli", "Imenice", "Pridjevi", "Prilozi"]
 data = []
-nwords = int(input(f"How many words do you want to practice? > "))
 
 for sheet in sheets:
     df = pd.read_excel(r"C:\Users\User\OneDrive\Belgeler\deutsch.xlsx", sheet_name=sheet, header=1)
@@ -45,6 +44,8 @@ for sheet in sheets:
         if temp:
             words.append(temp)
     data.append(words)
+
+nwords = int(input(f"How many words do you want to practice? > "))
 
 while True:
     opt = select()
