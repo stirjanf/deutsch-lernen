@@ -3,7 +3,7 @@ from colorama import Fore, Style
 import random
 import os
 
-def select():
+def select(sheets):
     os.system('cls')
     while True:
         n = input(f"How many words do you want to practice? > ").strip()
@@ -12,7 +12,9 @@ def select():
         if n:
            break   
     os.system('cls')
-    print(f"[1] - Glagoli\n[2] - Imenice\n[3] - Pridjevi\n[4] - Prijedlozi i ostalo\n[5] - Sve\n[Q] - Quit")
+    for sheet,i in zip(sheets,range(len(sheets))):
+        print(f"[{i+1}] - {sheet}")
+    print(f"[Q] - Quit")
     while True:
         opt = input(f"What do you want to practice? > ").strip()
         if opt == "q":
@@ -38,9 +40,12 @@ def play(obj):
             break
 
 data = []
+filename = r"C:\Users\User\OneDrive\Belgeler\deutsch.xlsx"
+file = pd.ExcelFile(filename)
+sheets = file.sheet_names
 print(f"Fetching data...")
-for sheet in ["Glagoli", "Imenice", "Pridjevi", "Prilozi"]:
-    df = pd.read_excel(r"C:\Users\User\OneDrive\Belgeler\deutsch.xlsx", sheet_name=sheet, header=1)
+for sheet in sheets:
+    df = pd.read_excel(filename, sheet_name=sheet, header=1)
     words = []
     for index,row in df.iterrows():
         temp = []
@@ -54,7 +59,7 @@ for sheet in ["Glagoli", "Imenice", "Pridjevi", "Prilozi"]:
     data.append(words)
 
 while True:
-    nwords,opt = select()
+    nwords,opt = select(sheets)
     if opt == 5:
         words = []
         for i in range(len(data)):
