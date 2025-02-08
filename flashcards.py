@@ -29,7 +29,6 @@ def select(sheets):
         if opt:
             return int(n),int(opt)
 
-
 def play(obj):
     os.system('cls')
     unused = obj
@@ -42,32 +41,44 @@ def play(obj):
         inpt = input(f"\n{Fore.GREEN}Riječ {len(used)}/{n}: {Fore.BLUE}{entry[-1]} {Style.RESET_ALL}> ")
         if inpt == "q":
             break    
-        if inpt != "da":
-            to_learn.append(entry)
         strng = " - ".join(map(str, entry[1:-1])) 
         print(f"{Fore.YELLOW}{strng}{Style.RESET_ALL}")
+        inpt = input(f"Did you know? > ")
+        if inpt == "x":
+            to_learn.append(entry)
         unused.remove(entry)
         if not unused:
             pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
             score = n-len(to_learn)
-            print(f"{Fore.YELLOW}Score: {score}/{n} ({(score/n)*100})%{Style.RESET_ALL}")
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp:
-                c = canvas.Canvas(tmp.name, pagesize=letter)
-                c.setFont("Arial", 12)
-                y = 750
-                for item in to_learn:
-                    item = str(item)
-                    c.drawString(100,y,item)
-                    y -= 20
-                c.save()
-            os.startfile(tmp.name)
-            input(f"Press enter to leave...")
+            print(f"\n{Fore.YELLOW}Score: {score}/{n} ({(score/n)*100})%{Style.RESET_ALL}")
+            if score != n:
+                with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp:
+                    c = canvas.Canvas(tmp.name, pagesize=letter)
+                    c.setFont("Arial", 12)
+                    y = 750
+                    line = 0
+                    for i,item in zip(range(len(to_learn)),to_learn):
+                        c.drawString(100,y,f"{i}. " + str(item))
+                        y -= 20
+                        line += 1
+                        if line >= 35:
+                            c.showPage()
+                            c.setFont("Arial", 12)
+                            y = 750
+                            line = 0
+                    c.save()
+                os.startfile(tmp.name)
+            input(f"\nPress enter to leave...")
             break
 
 data = []
 filename = r"C:\Users\User\OneDrive\Belgeler\deutsch.xlsx"
 file = pd.ExcelFile(filename)
 sheets = file.sheet_names
+condition = ""
+o = input(f"Do you want hard difficulty? > ")
+if o == "y":
+    condition = "da"
 print(f"Fetching data...")
 for sheet in sheets:
     df = pd.read_excel(filename, sheet_name=sheet, header=1)
@@ -76,7 +87,7 @@ for sheet in sheets:
         temp = []
         for column_name, value in row.items():
             if "Unnamed" not in column_name:
-                if value == "sl":
+                if value == "sl" or value == condition:
                     break
                 temp.append(str(value).strip())
         if temp:
