@@ -1,3 +1,4 @@
+from openpyxl import load_workbook
 import pandas as pd
 from colorama import Fore, Style
 import random
@@ -19,7 +20,6 @@ def select(sheets):
     os.system('cls')
     for sheet,i in zip(sheets,range(len(sheets))):
         print(f"[{i+1}] - {sheet}")
-    print(f"[5] - All\n[Q] - Quit")
     while True:
         opt = input(f"What do you want to practice? > ").strip()
         if opt == "q":
@@ -29,7 +29,24 @@ def select(sheets):
         if opt:
             return int(n),int(opt)
 
-def play(obj):
+def write(filename, what, sheet, val):
+    wb = load_workbook(filename)
+    ws = wb[sheet]
+    table = ws._tables[sheet]
+    rng = table.ref
+    sc,ec = rng.split(":")
+    sr = ws[sc].row
+    er = ws[ec].row
+    headers = {cell.value: cell.column for cell in ws[sr]}
+    wc = headers["Znam"]
+    for row in ws.iter_rows(min_row=sr+ 1, max_row=er, values_only=False):
+        for cell in row:
+            if cell.value and what in str(cell.value).lower():
+                ws.cell(row=cell.row, column=wc, value=val)
+    wb.save(filename)
+    wb.close()
+
+def play(obj, filename, sheet):
     os.system('cls')
     unused = obj
     n = len(obj)
@@ -46,6 +63,11 @@ def play(obj):
         inpt = input(f"Did you know? > ")
         if inpt == "x":
             to_learn.append(entry)
+            if sheet:
+                write(filename, entry[-1], sheet, "x")
+        else:
+            if sheet:
+                write(filename, entry[-1], sheet, "da")
         unused.remove(entry)
         if not unused:
             pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
@@ -96,17 +118,7 @@ for sheet in sheets:
 
 while True:
     nwords,opt = select(sheets)
-    if opt == 5:
-        words = []
-        if nwords == "x":
-            for i in range(len(data)):
-                words.append((data[i]))
-        else: 
-            for i in range(len(data)):
-                words.append((data[i])[:nwords])
-        play([item for sublist in words for item in sublist])
+    if nwords == "x":
+        play(data[opt-1],filename,sheets[opt-1])
     else:
-        if nwords == "x":
-            play(data[opt-1])
-        else:
-            play(data[opt-1][:nwords])
+        play(data[opt-1][:nwords],filename,sheets[opt-1])
