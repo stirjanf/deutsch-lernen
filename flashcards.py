@@ -36,10 +36,9 @@ def write(filename, what, sheet, val):
     rng = table.ref
     sc,ec = rng.split(":")
     sr = ws[sc].row
-    er = ws[ec].row
     headers = {cell.value: cell.column for cell in ws[sr]}
     wc = headers["Znam"]
-    for row in ws.iter_rows(min_row=sr+ 1, max_row=er, values_only=False):
+    for row in ws.iter_rows(min_row=sr+1, max_row=ws[ec].row, values_only=False):
         for cell in row:
             if cell.value and what in str(cell.value).lower():
                 ws.cell(row=cell.row, column=wc, value=val)
@@ -63,11 +62,9 @@ def play(obj, filename, sheet):
         inpt = input(f"Did you know? > ")
         if inpt == "x":
             to_learn.append(entry)
-            if sheet:
-                write(filename, entry[-1], sheet, "x")
         else:
-            if sheet:
-                write(filename, entry[-1], sheet, "da")
+            inpt = "da"
+        write(filename, entry[-1], sheet, inpt)
         unused.remove(entry)
         if not unused:
             pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
@@ -80,7 +77,7 @@ def play(obj, filename, sheet):
                     y = 750
                     line = 0
                     for i,item in zip(range(len(to_learn)),to_learn):
-                        c.drawString(100,y,f"{i}. " + str(item))
+                        c.drawString(100,y,f"{i+1}. " + str(item[-1]))
                         y -= 20
                         line += 1
                         if line >= 35:
@@ -98,7 +95,7 @@ filename = r"C:\Users\User\OneDrive\Belgeler\deutsch.xlsx"
 file = pd.ExcelFile(filename)
 sheets = file.sheet_names
 condition = ""
-o = input(f"Do you want hard difficulty? > ")
+o = input(f"Do you want hard difficulty? (y=yes) > ")
 if o == "y":
     condition = "da"
 print(f"Fetching data...")
